@@ -61,6 +61,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
     private TextView mDataField;//通用数据接收
     private TextView DPS310DataField;//310数据接收
     private TextView BatterDataField;//电池电量接收
+    private TextView WorkModeDataField;//当前工作状态接收
     private EditText readSendData;//edittext要发送的数据
     private Button send_btn;//发送按钮
     private Button send_locking_btn;//锁定按钮
@@ -85,6 +86,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
     private BluetoothGattCharacteristic Batter_recv_characteristic;//电量信息
     private BluetoothGattCharacteristic DPS310_recv_characteristic;//dps310传感器信息
     private BluetoothGattCharacteristic Universally_recv_characteristic;//通用信息接收
+    private BluetoothGattCharacteristic WorkMode_recv_characteristic;//当前工作状态接收
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection()
@@ -151,6 +153,11 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                         DPS310_recv_characteristic =
                                 gattService_temp.getCharacteristic(UUID.fromString(SampleGattAttributes.DPS310_recv_chara));
                         temp_GattCharacteristics.add(DPS310_recv_characteristic);
+
+                        WorkMode_recv_characteristic =
+                                gattService_temp.getCharacteristic(UUID.fromString(SampleGattAttributes.workmode_recv_chara));
+                        temp_GattCharacteristics.add(WorkMode_recv_characteristic);
+
                     }
 
                     if (gattService_temp.getUuid().equals(UUID.fromString(SampleGattAttributes.Batter_service)))
@@ -177,7 +184,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                                     System.out.println("enable the  NOTIFY");
                                 }
 
-                                Thread.sleep(300);
+                                Thread.sleep(400);
                             }
 
                         }catch (Exception e){
@@ -194,6 +201,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                 displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
                 display_batterlevelData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA_batter));
                 display_dps310Data(intent.getStringExtra(BluetoothLeService.EXTRA_DATA_dps310));
+                display_WorkModeData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA_workmode));
             }
         }
     };
@@ -270,6 +278,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
         mDataField = (TextView) findViewById(R.id.data_value);
         DPS310DataField = (TextView) findViewById(R.id.dps310_data_value);
         BatterDataField = (TextView) findViewById(R.id.batterlevel_data_value);
+        WorkModeDataField = (TextView) findViewById(R.id.workmode_value);
 
         readSendData = (EditText)findViewById(R.id.ready_send_data);
         send_btn = (Button) findViewById(R.id.send_btn);
@@ -424,6 +433,33 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
     private void display_batterlevelData(String data) {
         if (data != null) {
             BatterDataField.setText(data +"%");
+        }
+    }
+
+    private void display_WorkModeData(String data) {
+        if (data != null) {
+
+            String display =new String();
+            switch (data)
+            {
+                case "0": display="空闲状态";   break;
+                case "1": display="查询状态";   break;
+                case "2": display="抽烟状态";   break;
+                case "3": display="充电状态";   break;
+                case "4": display="待机状态";   break;
+                case "5": display="充满状态";   break;
+                case "6": display="低电量状态"; break;
+                case "7": display="断开充电状态";break;
+                case "8": display="短路";       break;
+                case "9": display="开路";       break;
+                case "10":display="干烧";       break;
+                case "11":display="电池温度异常";break;
+                case "12": display="电池电压低于安全充电值"; break;
+                default:WorkModeDataField.setText("未知状态" );break;
+            }
+
+            WorkModeDataField.setText(display );
+
         }
     }
 

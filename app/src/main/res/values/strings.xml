@@ -16,6 +16,7 @@
     <string name="ble_not_supported">不支持BLE</string>
     <string name="label_data">通用数据:</string>
     <string name="batter_label_data">电池电量:</string>
+    <string name="label_workmode_recv">工作状态:</string>
     <string name="dps310_label_data">DPS数据:</string>
     <string name="label_device_address">设备地址:</string>
     <string name="label_state">连接状态:</string>

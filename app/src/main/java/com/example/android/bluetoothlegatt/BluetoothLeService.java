@@ -62,14 +62,15 @@ public class BluetoothLeService extends Service {
             "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
     public final static String EXTRA_DATA =
             "com.example.bluetooth.le.EXTRA_DATA";
-
     public final static String EXTRA_DATA_batter =
             "com.example.bluetooth.le.EXTRA_DATA_batter";
-
     public final static String EXTRA_DATA_dps310 =
             "com.example.bluetooth.le.EXTRA_DATA_dps310";
+    public final static String EXTRA_DATA_workmode =
+            "com.example.bluetooth.le.EXTRA_DATA_workmode";
 
     public final static UUID UUID_WZY_batter = UUID.fromString(SampleGattAttributes.Batter_chara);
+    public final static UUID UUID_WZY_workmode = UUID.fromString(SampleGattAttributes.workmode_recv_chara);
     public final static UUID UUID_WZY_dps310 = UUID.fromString(SampleGattAttributes.DPS310_recv_chara);
 
     // Implements callback methods for GATT events that the app cares about.  For example,
@@ -151,6 +152,12 @@ public class BluetoothLeService extends Service {
             final int batterlevel = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
             Log.d(TAG, String.format("Received batter level: %d", batterlevel));
             intent.putExtra(EXTRA_DATA_batter, String.valueOf(batterlevel));
+        }
+        else if (UUID_WZY_workmode.equals(characteristic.getUuid()))
+        {
+            final int workmode = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+            Log.d(TAG, String.format("workmode is: %d", workmode));
+            intent.putExtra(EXTRA_DATA_workmode, String.valueOf(workmode));
         }
         else if(UUID_WZY_dps310.equals(characteristic.getUuid()))
         {
