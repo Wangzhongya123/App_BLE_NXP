@@ -32,6 +32,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,6 +48,8 @@ public class BluetoothLeService extends Service {
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
+
+    public static float UsedEnergy=0f;//累积使用的能量
 
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -68,10 +71,19 @@ public class BluetoothLeService extends Service {
             "com.example.bluetooth.le.EXTRA_DATA_dps310";
     public final static String EXTRA_DATA_workmode =
             "com.example.bluetooth.le.EXTRA_DATA_workmode";
+    public final static String EXTRA_DATA_smokepower =
+            "com.example.bluetooth.le.EXTRA_DATA_smokepower";
+    public final static String EXTRA_DATA_smokeenergy =
+            "com.example.bluetooth.le.EXTRA_DATA_smokeenergy";
+    public final static String EXTRA_DATA_usedenergy =
+            "com.example.bluetooth.le.EXTRA_DATA_usedenergy";//累积使用的能量
 
     public final static UUID UUID_WZY_batter = UUID.fromString(SampleGattAttributes.Batter_chara);
     public final static UUID UUID_WZY_workmode = UUID.fromString(SampleGattAttributes.workmode_recv_chara);
     public final static UUID UUID_WZY_dps310 = UUID.fromString(SampleGattAttributes.DPS310_recv_chara);
+    public final static UUID UUID_WZY_smokepower = UUID.fromString(SampleGattAttributes.power_recv_chara);
+    public final static UUID UUID_WZY_smokeenergy = UUID.fromString(SampleGattAttributes.Energy_recv_chara);
+
 
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
@@ -165,6 +177,44 @@ public class BluetoothLeService extends Service {
             if (data != null && data.length > 0)
             {
                 intent.putExtra(EXTRA_DATA_dps310, new String(data));
+            }
+        }
+        else if(UUID_WZY_smokepower.equals(characteristic.getUuid()))
+        {
+            final byte[] data = characteristic.getValue();
+            if (data != null && data.length > 0)
+                intent.putExtra(EXTRA_DATA_smokepower, new String(data));
+
+        }
+        else if(UUID_WZY_smokeenergy.equals(characteristic.getUuid()))
+        {
+            final byte[] data = characteristic.getValue();
+            if (data != null && data.length > 0)
+            {
+                float temp =0f;
+
+                intent.putExtra(EXTRA_DATA_smokeenergy, new String(data));
+
+                //for(int i=0;i<data.length;i++)
+                //     System.out.println(data[i]);
+
+                switch (data.length)
+                {
+                    case 3:temp = (float)((data[data.length-1]-48)*0.1f) + (float)(data[data.length-3]-48) ;break;
+                    case 4:temp = (float)((data[data.length-1]-48)*0.1f) + (float)(data[data.length-3]-48) +(float)((data[data.length-4]-48)*10) ;break;
+                    case 5:temp = (float)((data[data.length-1]-48)*0.1f) + (float)(data[data.length-3]-48) +(float)((data[data.length-4]-48)*10) +
+                                  (float)((data[data.length-5]-48)*100) ;break;
+                    case 6:temp = (float)((data[data.length-1]-48)*0.1f) + (float)(data[data.length-3]-48) +(float)((data[data.length-4]-48)*10) +
+                                  (float)((data[data.length-5]-48)*100) +(float)((data[data.length-6]-48)*1000);break;
+                    default:temp =0f;break;
+                }
+
+                UsedEnergy += temp;
+
+                DecimalFormat df = new DecimalFormat("###################.#");
+                intent.putExtra(EXTRA_DATA_usedenergy,df.format(UsedEnergy));
+
+                System.out.println("onetime: "+temp+"  "+"total: "+df.format(UsedEnergy));
             }
         }
         else

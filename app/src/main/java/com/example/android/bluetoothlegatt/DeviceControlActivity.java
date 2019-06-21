@@ -62,6 +62,10 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
     private TextView DPS310DataField;//310数据接收
     private TextView BatterDataField;//电池电量接收
     private TextView WorkModeDataField;//当前工作状态接收
+    private TextView SmokePowerDataField;//当前功率 显示
+    private TextView SmokeEnergyDataField;//本次使用能量
+    private TextView USEDEnergyDataField;//累积使用能量
+
     private EditText readSendData;//edittext要发送的数据
     private Button send_btn;//发送按钮
     private Button send_locking_btn;//锁定按钮
@@ -87,6 +91,8 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
     private BluetoothGattCharacteristic DPS310_recv_characteristic;//dps310传感器信息
     private BluetoothGattCharacteristic Universally_recv_characteristic;//通用信息接收
     private BluetoothGattCharacteristic WorkMode_recv_characteristic;//当前工作状态接收
+    private BluetoothGattCharacteristic SmokePower_recv_characteristic;//抽烟功率接收
+    private BluetoothGattCharacteristic SmokeEnergy_recv_characteristic;//本次消耗能量
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection()
@@ -158,6 +164,13 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                                 gattService_temp.getCharacteristic(UUID.fromString(SampleGattAttributes.workmode_recv_chara));
                         temp_GattCharacteristics.add(WorkMode_recv_characteristic);
 
+                        SmokePower_recv_characteristic =
+                                gattService_temp.getCharacteristic(UUID.fromString(SampleGattAttributes.power_recv_chara));
+                        temp_GattCharacteristics.add(SmokePower_recv_characteristic);
+
+                        SmokeEnergy_recv_characteristic =
+                                gattService_temp.getCharacteristic(UUID.fromString(SampleGattAttributes.Energy_recv_chara));
+                        temp_GattCharacteristics.add(SmokeEnergy_recv_characteristic);
                     }
 
                     if (gattService_temp.getUuid().equals(UUID.fromString(SampleGattAttributes.Batter_service)))
@@ -184,7 +197,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                                     System.out.println("enable the  NOTIFY");
                                 }
 
-                                Thread.sleep(400);
+                                Thread.sleep(500);
                             }
 
                         }catch (Exception e){
@@ -202,6 +215,9 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                 display_batterlevelData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA_batter));
                 display_dps310Data(intent.getStringExtra(BluetoothLeService.EXTRA_DATA_dps310));
                 display_WorkModeData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA_workmode));
+                display_smokepowerData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA_smokepower));
+                display_smokeenergylData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA_smokeenergy));
+                display_usedenergylData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA_usedenergy));
             }
         }
     };
@@ -279,6 +295,9 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
         DPS310DataField = (TextView) findViewById(R.id.dps310_data_value);
         BatterDataField = (TextView) findViewById(R.id.batterlevel_data_value);
         WorkModeDataField = (TextView) findViewById(R.id.workmode_value);
+        SmokePowerDataField = (TextView) findViewById(R.id.smokepower_value);
+        SmokeEnergyDataField = (TextView) findViewById(R.id.smokeenergy_data_value);
+        USEDEnergyDataField = (TextView)findViewById(R.id.UsedEnergy_data_value);
 
         readSendData = (EditText)findViewById(R.id.ready_send_data);
         send_btn = (Button) findViewById(R.id.send_btn);
@@ -436,6 +455,24 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
         }
     }
 
+    private void display_smokepowerData(String data) {
+        if (data != null) {
+            SmokePowerDataField.setText(data);
+        }
+    }
+
+    private void display_smokeenergylData(String data) {
+        if (data != null) {
+            SmokeEnergyDataField.setText(data);
+        }
+    }
+
+    private void display_usedenergylData(String data) {
+        if (data != null) {
+            USEDEnergyDataField.setText(data);
+        }
+    }
+
     private void display_WorkModeData(String data) {
         if (data != null) {
 
@@ -458,8 +495,10 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                 default:WorkModeDataField.setText("未知状态" );break;
             }
 
-            WorkModeDataField.setText(display );
+            if(data !="2")
+                SmokePowerDataField.setText("0");
 
+            WorkModeDataField.setText(display );
         }
     }
 

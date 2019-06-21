@@ -92,21 +92,90 @@
                      android:textSize="18sp"/>
              </LinearLayout>
 
-             <LinearLayout android:orientation="horizontal"
+             <LinearLayout
+                 android:orientation="horizontal"
                  android:layout_width="match_parent"
-                 android:layout_height="wrap_content"
-                 android:layout_margin="5dp">
-                 <TextView android:layout_width="wrap_content"
+                 android:layout_height="wrap_content">
+
+                 <LinearLayout android:orientation="horizontal"
+                     android:layout_width="0dp"
+                     android:layout_weight="1"
                      android:layout_height="wrap_content"
-                     android:text="@string/batter_label_data"
-                     android:textSize="18sp"/>
-                 <Space android:layout_width="5dp"
-                     android:layout_height="wrap_content"/>
-                 <TextView android:id="@+id/batterlevel_data_value"
-                     android:layout_width="match_parent"
+                     android:layout_margin="5dp">
+                     <TextView android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="@string/label_workmode_recv"
+                         android:textSize="18sp"/>
+                     <Space android:layout_width="5dp"
+                         android:layout_height="wrap_content"/>
+                     <TextView android:id="@+id/workmode_value"
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content"
+                         android:text="@string/no_data"
+                         android:textSize="18sp"/>
+                 </LinearLayout>
+
+                 <LinearLayout android:orientation="horizontal"
+                     android:layout_width="0dp"
+                     android:layout_weight="1"
                      android:layout_height="wrap_content"
-                     android:text="@string/no_data"
-                     android:textSize="18sp"/>
+                     android:layout_margin="5dp">
+                     <TextView android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="@string/smokepower_label_data"
+                         android:textSize="18sp"/>
+                     <Space android:layout_width="5dp"
+                         android:layout_height="wrap_content"/>
+                     <TextView android:id="@+id/smokepower_value"
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content"
+                         android:text="@string/no_data"
+                         android:textSize="18sp"/>
+                 </LinearLayout>
+
+             </LinearLayout>
+
+             <LinearLayout
+                 android:orientation="horizontal"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content">
+
+                 <LinearLayout android:orientation="horizontal"
+                     android:layout_width="0dp"
+                     android:layout_weight="1"
+                     android:layout_height="wrap_content"
+                     android:layout_margin="5dp">
+                     <TextView android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="@string/batter_label_data"
+                         android:textSize="18sp"/>
+                     <Space android:layout_width="5dp"
+                         android:layout_height="wrap_content"/>
+                     <TextView android:id="@+id/batterlevel_data_value"
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content"
+                         android:text="@string/no_data"
+                         android:textSize="18sp"/>
+                 </LinearLayout>
+
+                 <LinearLayout android:orientation="horizontal"
+                     android:layout_width="0dp"
+                     android:layout_weight="1"
+                     android:layout_height="wrap_content"
+                     android:layout_margin="5dp">
+                     <TextView android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="@string/smokeenergy_label_data"
+                         android:textSize="18sp"/>
+                     <Space android:layout_width="5dp"
+                         android:layout_height="wrap_content"/>
+                     <TextView android:id="@+id/smokeenergy_data_value"
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content"
+                         android:text="@string/no_data"
+                         android:textSize="18sp"/>
+                 </LinearLayout>
+
              </LinearLayout>
 
              <LinearLayout android:orientation="horizontal"
@@ -115,16 +184,17 @@
                  android:layout_margin="5dp">
                  <TextView android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
-                     android:text="@string/label_workmode_recv"
+                     android:text="@string/usedenergy_label_data"
                      android:textSize="18sp"/>
                  <Space android:layout_width="5dp"
                      android:layout_height="wrap_content"/>
-                 <TextView android:id="@+id/workmode_value"
+                 <TextView android:id="@+id/UsedEnergy_data_value"
                      android:layout_width="match_parent"
                      android:layout_height="wrap_content"
                      android:text="@string/no_data"
                      android:textSize="18sp"/>
              </LinearLayout>
+
 
              <LinearLayout android:orientation="horizontal"
                  android:layout_width="match_parent"
