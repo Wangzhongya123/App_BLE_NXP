@@ -415,7 +415,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
 
                 setSmokePower.setText(Float.toString(setsmokepower));
 
-                String data = readSendData.getText().toString();
+                String data = Float.toString(setsmokepower);
                 GetSetPower_sendrecv_characteristic.setValue(data.getBytes());
 
                 for(int i=0;i<data.length();i++)
@@ -432,11 +432,9 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                 if(setsmokepower < 4.0f)
                     setsmokepower = 4.0f;
 
-                DecimalFormat df = new DecimalFormat("####.#");
-
                 setSmokePower.setText(Float.toString(setsmokepower));
 
-                String data = setSmokePower.getText().toString();
+                String data = Float.toString(setsmokepower);
                 GetSetPower_sendrecv_characteristic.setValue(data.getBytes());
 
                 for(int i=0;i<data.length();i++)
