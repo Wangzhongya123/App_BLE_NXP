@@ -79,6 +79,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
     private Button inc_power_btn;//显示模式选择
 
     public static float setsmokepower = 6.5f;
+    private static int first_set=0;
 
     private String mDeviceName;
     private String mDeviceAddress;
@@ -410,20 +411,32 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
             case R.id.plus_power_btn:
             {
                 setsmokepower += 0.1f;
+
                 if(setsmokepower > 8.0f)
                     setsmokepower = 8.0f;
+                else
+                {
+                    DecimalFormat df = new DecimalFormat("##.0");
+                    setSmokePower.setText(df.format(setsmokepower));
+                    String data = setSmokePower.getText().toString();
+                    GetSetPower_sendrecv_characteristic.setValue(data.getBytes());
 
-                setSmokePower.setText(Float.toString(setsmokepower));
+                    for(int i=0;i<data.length();i++)
+                        System.out.println(data);
 
-                String data = Float.toString(setsmokepower);
-                GetSetPower_sendrecv_characteristic.setValue(data.getBytes());
-
-                for(int i=0;i<data.length();i++)
-                    System.out.println(data);
-
-                mBluetoothLeService.wirteCharacteristic(GetSetPower_sendrecv_characteristic);
-                mBluetoothLeService.readCharacteristic(GetSetPower_sendrecv_characteristic);
-
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try{
+                                mBluetoothLeService.wirteCharacteristic(GetSetPower_sendrecv_characteristic);
+                                Thread.sleep(200);
+                                mBluetoothLeService.readCharacteristic(GetSetPower_sendrecv_characteristic);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                }
             };break;
 
             case R.id.inc_power_btn:
@@ -431,23 +444,34 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                 setsmokepower -= 0.1f;
                 if(setsmokepower < 4.0f)
                     setsmokepower = 4.0f;
+                else
+                {
+                    DecimalFormat df = new DecimalFormat("##.0");
+                    setSmokePower.setText(df.format(setsmokepower));
+                    String data = setSmokePower.getText().toString();
+                    GetSetPower_sendrecv_characteristic.setValue(data.getBytes());
 
-                setSmokePower.setText(Float.toString(setsmokepower));
-
-                String data = Float.toString(setsmokepower);
-                GetSetPower_sendrecv_characteristic.setValue(data.getBytes());
-
-                for(int i=0;i<data.length();i++)
+                    for(int i=0;i<data.length();i++)
                         System.out.println(data);
 
-                mBluetoothLeService.wirteCharacteristic(GetSetPower_sendrecv_characteristic);
-                mBluetoothLeService.readCharacteristic(GetSetPower_sendrecv_characteristic);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try{
+                                mBluetoothLeService.wirteCharacteristic(GetSetPower_sendrecv_characteristic);
+                                Thread.sleep(200);
+                                mBluetoothLeService.readCharacteristic(GetSetPower_sendrecv_characteristic);
 
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                }
             };break;
 
             default:break;
         }
-
     }
 
     @Override
@@ -466,12 +490,14 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
         super.onPause();
         unregisterReceiver(mGattUpdateReceiver);
         Log.d(TAG, "onPause");
+        first_set =0;
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         Log.d(TAG, "onStop");
+        first_set =0;
     }
 
     @Override
@@ -559,6 +585,12 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
     private void display_GetSetPowerlData(String data) {
         if (data != null) {
             GetSetPowerDataField.setText(data+"W");
+
+            if(first_set ==0){
+                first_set =1;
+                setSmokePower.setText(data);
+                setsmokepower = BluetoothLeService.initSmokePower;
+            }
         }
     }
 

@@ -50,6 +50,7 @@ public class BluetoothLeService extends Service {
     private int mConnectionState = STATE_DISCONNECTED;
 
     public static float UsedEnergy=0f;//累积使用的能量
+    public static float initSmokePower =0f;
 
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -86,7 +87,6 @@ public class BluetoothLeService extends Service {
     public final static UUID UUID_WZY_smokepower = UUID.fromString(SampleGattAttributes.power_recv_chara);
     public final static UUID UUID_WZY_smokeenergy = UUID.fromString(SampleGattAttributes.Energy_recv_chara);
     public final static UUID UUID_WZY_getsetpower = UUID.fromString(SampleGattAttributes.powerset_recvsend_chara);
-
 
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
@@ -198,7 +198,9 @@ public class BluetoothLeService extends Service {
 
                 power = (float)(((short)data[0])*256 + (data[1] & 0xFF) )/100;
 
-                DecimalFormat df = new DecimalFormat("####.##");
+                initSmokePower = power;
+
+                DecimalFormat df = new DecimalFormat("##.0");
                 intent.putExtra(EXTRA_DATA_getsetpower,df.format(power));
 
                 System.out.println(data[0] +"   " + (data[1] & 0xFF) +"  "+"power  "+power);
@@ -229,7 +231,7 @@ public class BluetoothLeService extends Service {
 
                 UsedEnergy += temp;
 
-                DecimalFormat df = new DecimalFormat("###################.#");
+                DecimalFormat df = new DecimalFormat("###################.0");
                 intent.putExtra(EXTRA_DATA_usedenergy,df.format(UsedEnergy));
 
                 System.out.println("onetime: "+temp+"  "+"total: "+df.format(UsedEnergy));
