@@ -40,6 +40,7 @@ import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,13 +66,19 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
     private TextView SmokePowerDataField;//当前功率 显示
     private TextView SmokeEnergyDataField;//本次使用能量
     private TextView USEDEnergyDataField;//累积使用能量
+    private TextView GetSetPowerDataField;//累积使用能量
 
     private EditText readSendData;//edittext要发送的数据
+    private EditText setSmokePower;//edittext要设定的抽烟最大功率
     private Button send_btn;//发送按钮
     private Button send_locking_btn;//锁定按钮
     private Button send_unlock_btn;//解锁按钮
     private Button btn_mode_btn;//显示模式选择
     private Button list_mode_start_btn;//显示模式选择
+    private Button plus_power_btn;//解锁按钮
+    private Button inc_power_btn;//显示模式选择
+
+    public static float setsmokepower = 6.5f;
 
     private String mDeviceName;
     private String mDeviceAddress;
@@ -93,6 +100,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
     private BluetoothGattCharacteristic WorkMode_recv_characteristic;//当前工作状态接收
     private BluetoothGattCharacteristic SmokePower_recv_characteristic;//抽烟功率接收
     private BluetoothGattCharacteristic SmokeEnergy_recv_characteristic;//本次消耗能量
+    private BluetoothGattCharacteristic GetSetPower_sendrecv_characteristic;//当前设定的最大的功率值
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection()
@@ -171,6 +179,9 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                         SmokeEnergy_recv_characteristic =
                                 gattService_temp.getCharacteristic(UUID.fromString(SampleGattAttributes.Energy_recv_chara));
                         temp_GattCharacteristics.add(SmokeEnergy_recv_characteristic);
+
+                        GetSetPower_sendrecv_characteristic =
+                            gattService_temp.getCharacteristic(UUID.fromString(SampleGattAttributes.powerset_recvsend_chara));
                     }
 
                     if (gattService_temp.getUuid().equals(UUID.fromString(SampleGattAttributes.Batter_service)))
@@ -197,8 +208,10 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                                     System.out.println("enable the  NOTIFY");
                                 }
 
-                                Thread.sleep(500);
+                                Thread.sleep(300);
                             }
+
+                            mBluetoothLeService.readCharacteristic(GetSetPower_sendrecv_characteristic);
 
                         }catch (Exception e){
                             e.printStackTrace();
@@ -218,6 +231,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                 display_smokepowerData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA_smokepower));
                 display_smokeenergylData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA_smokeenergy));
                 display_usedenergylData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA_usedenergy));
+                display_GetSetPowerlData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA_getsetpower));
             }
         }
     };
@@ -276,6 +290,13 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            String tempData = savedInstanceState.getString("usedSmokeEnergy");
+            Log.d(TAG, tempData);
+            display_usedenergylData(tempData);
+        }
+
         getWindow().setSoftInputMode
                 (WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN|
                         WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -298,11 +319,15 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
         SmokePowerDataField = (TextView) findViewById(R.id.smokepower_value);
         SmokeEnergyDataField = (TextView) findViewById(R.id.smokeenergy_data_value);
         USEDEnergyDataField = (TextView)findViewById(R.id.UsedEnergy_data_value);
+        GetSetPowerDataField = (TextView)findViewById(R.id.powerget_data_value);
 
         readSendData = (EditText)findViewById(R.id.ready_send_data);
+        setSmokePower = (EditText)findViewById(R.id.setpower_data);
         send_btn = (Button) findViewById(R.id.send_btn);
         send_locking_btn = (Button) findViewById(R.id.send_locking_btn);
         send_unlock_btn = (Button) findViewById(R.id.send_unlock_btn);
+        plus_power_btn = (Button) findViewById(R.id.plus_power_btn);
+        inc_power_btn = (Button) findViewById(R.id.inc_power_btn);
 
         btn_mode_btn = (Button) findViewById(R.id.btn_mode_btn);
         list_mode_start_btn = (Button) findViewById(R.id.list_mode_start_btn);
@@ -317,6 +342,17 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
         send_unlock_btn.setOnClickListener(this);
         btn_mode_btn.setOnClickListener(this);
         list_mode_start_btn.setOnClickListener(this);
+        plus_power_btn.setOnClickListener(this);
+        inc_power_btn.setOnClickListener(this);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        String UsedSmokeEnergy = USEDEnergyDataField.getText().toString();
+        Log.d(TAG, UsedSmokeEnergy);
+        outState.putString("usedSmokeEnergy", UsedSmokeEnergy);
     }
 
     @Override
@@ -371,12 +407,52 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                 Toast.makeText(DeviceControlActivity.this, "下版本支持", Toast.LENGTH_SHORT).show();
             }break;
 
+            case R.id.plus_power_btn:
+            {
+                setsmokepower += 0.1f;
+                if(setsmokepower > 8.0f)
+                    setsmokepower = 8.0f;
+
+                setSmokePower.setText(Float.toString(setsmokepower));
+
+                String data = readSendData.getText().toString();
+                GetSetPower_sendrecv_characteristic.setValue(data.getBytes());
+
+                for(int i=0;i<data.length();i++)
+                    System.out.println(data);
+
+                mBluetoothLeService.wirteCharacteristic(GetSetPower_sendrecv_characteristic);
+                mBluetoothLeService.readCharacteristic(GetSetPower_sendrecv_characteristic);
+
+            };break;
+
+            case R.id.inc_power_btn:
+            {
+                setsmokepower -= 0.1f;
+                if(setsmokepower < 4.0f)
+                    setsmokepower = 4.0f;
+
+                DecimalFormat df = new DecimalFormat("####.#");
+
+                setSmokePower.setText(Float.toString(setsmokepower));
+
+                String data = setSmokePower.getText().toString();
+                GetSetPower_sendrecv_characteristic.setValue(data.getBytes());
+
+                for(int i=0;i<data.length();i++)
+                        System.out.println(data);
+
+                mBluetoothLeService.wirteCharacteristic(GetSetPower_sendrecv_characteristic);
+                mBluetoothLeService.readCharacteristic(GetSetPower_sendrecv_characteristic);
+
+            };break;
+
             default:break;
         }
 
     }
 
-        @Override
+    @Override
     protected void onResume() {
         super.onResume();
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
@@ -384,12 +460,20 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
         }
+        Log.d(TAG, "onResume");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mGattUpdateReceiver);
+        Log.d(TAG, "onPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop");
     }
 
     @Override
@@ -397,6 +481,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
         super.onDestroy();
         unbindService(mServiceConnection);
         mBluetoothLeService = null;
+        Log.d(TAG, "onDestroy");
     }
 
     @Override
@@ -470,6 +555,12 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
     private void display_usedenergylData(String data) {
         if (data != null) {
             USEDEnergyDataField.setText(data);
+        }
+    }
+
+    private void display_GetSetPowerlData(String data) {
+        if (data != null) {
+            GetSetPowerDataField.setText(data+"W");
         }
     }
 

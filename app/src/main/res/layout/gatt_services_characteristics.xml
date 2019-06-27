@@ -98,17 +98,17 @@
                  android:layout_height="wrap_content">
 
                  <LinearLayout android:orientation="horizontal"
-                     android:layout_width="0dp"
                      android:layout_weight="1"
+                     android:layout_width="0dp"
                      android:layout_height="wrap_content"
                      android:layout_margin="5dp">
                      <TextView android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
-                         android:text="@string/label_workmode_recv"
+                         android:text="@string/setgetpower_label_data"
                          android:textSize="18sp"/>
                      <Space android:layout_width="5dp"
                          android:layout_height="wrap_content"/>
-                     <TextView android:id="@+id/workmode_value"
+                     <TextView android:id="@+id/powerget_data_value"
                          android:layout_width="match_parent"
                          android:layout_height="wrap_content"
                          android:text="@string/no_data"
@@ -165,6 +165,31 @@
                      android:layout_margin="5dp">
                      <TextView android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
+                         android:text="@string/label_workmode_recv"
+                         android:textSize="18sp"/>
+                     <Space android:layout_width="5dp"
+                         android:layout_height="wrap_content"/>
+                     <TextView android:id="@+id/workmode_value"
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content"
+                         android:text="@string/no_data"
+                         android:textSize="18sp"/>
+                 </LinearLayout>
+             </LinearLayout>
+
+
+             <LinearLayout
+                 android:orientation="horizontal"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content">
+
+                 <LinearLayout android:orientation="horizontal"
+                     android:layout_width="0dp"
+                     android:layout_weight="1"
+                     android:layout_height="wrap_content"
+                     android:layout_margin="5dp">
+                     <TextView android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
                          android:text="@string/smokeenergy_label_data"
                          android:textSize="18sp"/>
                      <Space android:layout_width="5dp"
@@ -176,43 +201,76 @@
                          android:textSize="18sp"/>
                  </LinearLayout>
 
+                 <LinearLayout android:orientation="horizontal"
+                     android:layout_weight="1"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:layout_margin="5dp">
+                     <TextView android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="@string/usedenergy_label_data"
+                         android:textSize="18sp"/>
+                     <Space android:layout_width="5dp"
+                         android:layout_height="wrap_content"/>
+                     <TextView android:id="@+id/UsedEnergy_data_value"
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content"
+                         android:text="@string/no_data"
+                         android:textSize="18sp"/>
+                 </LinearLayout>
+
              </LinearLayout>
+
 
              <LinearLayout android:orientation="horizontal"
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content"
-                 android:layout_margin="5dp">
-                 <TextView android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:text="@string/usedenergy_label_data"
-                     android:textSize="18sp"/>
-                 <Space android:layout_width="5dp"
-                     android:layout_height="wrap_content"/>
-                 <TextView android:id="@+id/UsedEnergy_data_value"
-                     android:layout_width="match_parent"
-                     android:layout_height="wrap_content"
-                     android:text="@string/no_data"
-                     android:textSize="18sp"/>
-             </LinearLayout>
+                 android:layout_margin="2dp">
 
+                 <LinearLayout
+                     android:orientation="horizontal"
+                     android:layout_weight="1"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content">
 
-             <LinearLayout android:orientation="horizontal"
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content"
-                 android:layout_margin="5dp">
+                     <Button
+                         android:id="@+id/send_locking_btn"
+                         android:text="锁定"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content" />
+                     <Space android:layout_width="2dp"
+                         android:layout_height="wrap_content"/>
+                     <Button
+                         android:id="@+id/send_unlock_btn"
+                         android:text="解锁"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content" />
+                 </LinearLayout>
 
-                 <Button
-                     android:id="@+id/send_locking_btn"
-                     android:text="锁定"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content" />
-                 <Space android:layout_width="5dp"
-                     android:layout_height="wrap_content"/>
-                 <Button
-                     android:id="@+id/send_unlock_btn"
-                     android:text="解锁"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content" />
+                 <LinearLayout
+                     android:orientation="horizontal"
+                     android:layout_weight="2"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content">
+
+                     <EditText
+                         android:id="@+id/setpower_data"
+                         android:hint="6.50W"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content" />
+                     <Button
+                         android:id="@+id/plus_power_btn"
+                         android:text="+"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content" />
+                     <Button
+                         android:id="@+id/inc_power_btn"
+                         android:text="-"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content" />
+
+                 </LinearLayout>
+
              </LinearLayout>
 
              <LinearLayout

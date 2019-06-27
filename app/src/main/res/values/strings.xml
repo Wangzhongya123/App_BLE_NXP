@@ -20,7 +20,8 @@
     <string name="dps310_label_data">DPS数据:</string>
     <string name="smokepower_label_data">当前功率:</string>
     <string name="smokeenergy_label_data">本次耗能:</string>
-    <string name="usedenergy_label_data">累积消耗能量:</string>
+    <string name="usedenergy_label_data">累积耗能:</string>
+    <string name="setgetpower_label_data">设定功率:</string>
     <string name="label_device_address">设备地址:</string>
     <string name="label_state">连接状态:</string>
     <string name="no_data">无数据</string>

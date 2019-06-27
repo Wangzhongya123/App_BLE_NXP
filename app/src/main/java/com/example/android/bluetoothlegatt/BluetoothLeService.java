@@ -77,12 +77,15 @@ public class BluetoothLeService extends Service {
             "com.example.bluetooth.le.EXTRA_DATA_smokeenergy";
     public final static String EXTRA_DATA_usedenergy =
             "com.example.bluetooth.le.EXTRA_DATA_usedenergy";//累积使用的能量
+    public final static String EXTRA_DATA_getsetpower =
+            "com.example.bluetooth.le.EXTRA_DATA_getsetpower";//用户设定的最大抽烟功率
 
     public final static UUID UUID_WZY_batter = UUID.fromString(SampleGattAttributes.Batter_chara);
     public final static UUID UUID_WZY_workmode = UUID.fromString(SampleGattAttributes.workmode_recv_chara);
     public final static UUID UUID_WZY_dps310 = UUID.fromString(SampleGattAttributes.DPS310_recv_chara);
     public final static UUID UUID_WZY_smokepower = UUID.fromString(SampleGattAttributes.power_recv_chara);
     public final static UUID UUID_WZY_smokeenergy = UUID.fromString(SampleGattAttributes.Energy_recv_chara);
+    public final static UUID UUID_WZY_getsetpower = UUID.fromString(SampleGattAttributes.powerset_recvsend_chara);
 
 
     // Implements callback methods for GATT events that the app cares about.  For example,
@@ -185,6 +188,21 @@ public class BluetoothLeService extends Service {
             if (data != null && data.length > 0)
                 intent.putExtra(EXTRA_DATA_smokepower, new String(data));
 
+        }
+        else if(UUID_WZY_getsetpower.equals(characteristic.getUuid()))
+        {
+            final byte[] data = characteristic.getValue();
+            if (data != null && data.length > 0)
+            {
+                float power =0f;
+
+                power = (float)(((short)data[0])*256 + (data[1] & 0xFF) )/100;
+
+                DecimalFormat df = new DecimalFormat("####.##");
+                intent.putExtra(EXTRA_DATA_getsetpower,df.format(power));
+
+                System.out.println(data[0] +"   " + (data[1] & 0xFF) +"  "+"power  "+power);
+            }
         }
         else if(UUID_WZY_smokeenergy.equals(characteristic.getUuid()))
         {

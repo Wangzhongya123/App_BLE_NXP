@@ -43,6 +43,7 @@ public class SampleGattAttributes {
     public static String Energy_recv_chara =        "d44bc439-abfd-45a2-b575-925416129604";
     public static String power_recv_chara =         "d44bc439-abfd-45a2-b575-925416129605";
     public static String workmode_recv_chara =      "d44bc439-abfd-45a2-b575-925416129606";
+    public static String powerset_recvsend_chara =  "d44bc439-abfd-45a2-b575-925416129607";
 
     public static String ECig_service =             "00008888-0000-1000-8000-00805f9b34fb";
     public static String ECig_Data_recv_chara =     "d44bc439-abfd-45a2-b575-925416129611";
@@ -80,6 +81,7 @@ public class SampleGattAttributes {
         attributes.put(Energy_recv_chara,                       "能量数据接收");
         attributes.put(power_recv_chara,                        "抽烟功率接收");
         attributes.put(workmode_recv_chara,                     "工作状态接收");
+        attributes.put(powerset_recvsend_chara,                 "抽烟功率读取与设定");
 
         // 电子烟 Characteristics.
         attributes.put(ECig_Data_recv_chara,                    "电子烟数据接收");
