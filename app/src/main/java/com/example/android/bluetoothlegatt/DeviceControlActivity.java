@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -421,8 +422,8 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                     String data = setSmokePower.getText().toString();
                     GetSetPower_sendrecv_characteristic.setValue(data.getBytes());
 
-                    for(int i=0;i<data.length();i++)
-                        System.out.println(data);
+                    //for(int i=0;i<data.length();i++)
+                    //    System.out.println(data);
 
                     new Thread(new Runnable() {
                         @Override
@@ -451,8 +452,8 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                     String data = setSmokePower.getText().toString();
                     GetSetPower_sendrecv_characteristic.setValue(data.getBytes());
 
-                    for(int i=0;i<data.length();i++)
-                        System.out.println(data);
+                    //for(int i=0;i<data.length();i++)
+                    //    System.out.println(data);
 
                     new Thread(new Runnable() {
                         @Override
@@ -542,6 +543,10 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
             @Override
             public void run() {
                 mConnectionState.setText(resourceId);
+                if(mConnected)
+                    mConnectionState.setBackgroundColor(Color.GREEN);
+                else
+                    mConnectionState.setBackgroundColor(Color.RED);
             }
         });
     }

@@ -218,16 +218,18 @@ public class BluetoothLeService extends Service {
                 //for(int i=0;i<data.length;i++)
                 //     System.out.println(data[i]);
 
-                switch (data.length)
-                {
-                    case 3:temp = (float)((data[data.length-1]-48)*0.1f) + (float)(data[data.length-3]-48) ;break;
-                    case 4:temp = (float)((data[data.length-1]-48)*0.1f) + (float)(data[data.length-3]-48) +(float)((data[data.length-4]-48)*10) ;break;
-                    case 5:temp = (float)((data[data.length-1]-48)*0.1f) + (float)(data[data.length-3]-48) +(float)((data[data.length-4]-48)*10) +
-                                  (float)((data[data.length-5]-48)*100) ;break;
-                    case 6:temp = (float)((data[data.length-1]-48)*0.1f) + (float)(data[data.length-3]-48) +(float)((data[data.length-4]-48)*10) +
-                                  (float)((data[data.length-5]-48)*100) +(float)((data[data.length-6]-48)*1000);break;
-                    default:temp =0f;break;
-                }
+                temp = Float.parseFloat(new String(data));
+
+                //switch (data.length)
+                //{
+                //    case 3:temp = (float)((data[data.length-1]-48)*0.1f) + (float)(data[data.length-3]-48) ;break;
+                //    case 4:temp = (float)((data[data.length-1]-48)*0.1f) + (float)(data[data.length-3]-48) +(float)((data[data.length-4]-48)*10) ;break;
+                //    case 5:temp = (float)((data[data.length-1]-48)*0.1f) + (float)(data[data.length-3]-48) +(float)((data[data.length-4]-48)*10) +
+                //                  (float)((data[data.length-5]-48)*100) ;break;
+                //    case 6:temp = (float)((data[data.length-1]-48)*0.1f) + (float)(data[data.length-3]-48) +(float)((data[data.length-4]-48)*10) +
+                //                  (float)((data[data.length-5]-48)*100) +(float)((data[data.length-6]-48)*1000);break;
+                //    default:temp =0f;break;
+                //}
 
                 UsedEnergy += temp;
 
