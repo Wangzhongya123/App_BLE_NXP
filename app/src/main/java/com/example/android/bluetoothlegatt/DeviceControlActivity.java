@@ -41,6 +41,9 @@ import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -560,6 +563,24 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
     private void display_dps310Data(String data) {
         if (data != null) {
             DPS310DataField.setText(data);
+            //parseJSONWithJSONObject(data);
+            //[{"P":"999.99","T":"29.99"}]
+        }
+    }
+
+    private void parseJSONWithJSONObject(String jsonData) {
+        try {
+            JSONArray jsonArray = new JSONArray(jsonData);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = (JSONObject)jsonArray.get(i);
+
+                float press = Float.parseFloat(jsonObject.getString("P"));
+                float temp = Float.parseFloat(jsonObject.getString("T"));
+
+                System.out.println("dps310 press: "+press +"dps310 temp: "+temp);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -627,6 +648,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
             WorkModeDataField.setText(display );
         }
     }
+
 
     // Demonstrates how to iterate through the supported GATT Services/Characteristics.
     // In this sample, we populate the data structure that is bound to the ExpandableListView
