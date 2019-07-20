@@ -296,18 +296,17 @@
                  android:id="@+id/gatt_services_list"
                  android:layout_below="@id/data_layout"
                  android:layout_above="@id/layout_below_group"
+                 android:visibility="gone"
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content" />
 
-            <!--
-             <FrameLayout
-                android:id="@+id/ly_content"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/data_layout"
-                android:layout_above="@id/layout_below_group" >
-             </FrameLayout>
-             -->
+             <com.example.android.bluetoothlegatt.LineView
+                 android:id="@+id/LineView"
+                 android:layout_below="@id/data_layout"
+                 android:layout_above="@id/layout_below_group"
+                 android:visibility="visible"
+                 android:layout_width="match_parent"
+                 android:layout_height="140dp" />
 
          <LinearLayout
              android:orientation="horizontal"
@@ -317,7 +316,7 @@
              android:layout_height="wrap_content">
              <Button
                  android:id="@+id/btn_mode_btn"
-                 android:text="功能1"
+                 android:text="切换图表"
                  android:layout_weight="1"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content" />

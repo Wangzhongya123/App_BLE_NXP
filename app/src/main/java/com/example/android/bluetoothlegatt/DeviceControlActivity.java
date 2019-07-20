@@ -28,7 +28,9 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,6 +50,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 /**
@@ -82,8 +86,19 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
     private Button plus_power_btn;//解锁按钮
     private Button inc_power_btn;//显示模式选择
 
+    Timer LineViewimer;
+    TimerTask LineViewtask;//定时的任务
+
     public static float setsmokepower = 6.5f;
     private static int first_set=0;
+    private static float output_power=0;
+
+    //图表数据
+    LineView chartView;
+    private int chartdata_x=0;
+    final int data_number=16;
+    List<String> xValues = new ArrayList<>();   //x轴数据集合
+    List<Float> yValues = new ArrayList<>();  //y轴数据集合
 
     private String mDeviceName;
     private String mDeviceAddress;
@@ -124,6 +139,17 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mBluetoothLeService = null;
+        }
+    };
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if(msg.what == 0x123)
+            {
+                LineView_updata(++chartdata_x,output_power);
+                System.out.println("LINEVIEW DISPLAY: " + output_power);
+            }
         }
     };
 
@@ -316,6 +342,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
         mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
         mGattServicesList.setOnChildClickListener(servicesListClickListner);
         mConnectionState = (TextView) findViewById(R.id.connection_state);
+        chartView = findViewById(R.id.LineView);
 
         mDataField = (TextView) findViewById(R.id.data_value);
         DPS310DataField = (TextView) findViewById(R.id.dps310_data_value);
@@ -349,6 +376,56 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
         list_mode_start_btn.setOnClickListener(this);
         plus_power_btn.setOnClickListener(this);
         inc_power_btn.setOnClickListener(this);
+
+        LineViewtask = new TimerTask(){
+            public void run(){
+                //LineView_updata(++chartdata_x,output_power);
+                //System.out.println("LINEVIEW DISPLAY: " + output_power);
+                Message message = new Message();
+                message.what = 0x123;
+                handler.sendMessage(message);
+            }
+        };
+        LineViewimer = new Timer();
+        LineViewimer.schedule(LineViewtask, 0,500);//开启定时器，delay 1s后执行task
+
+        initiLineViewData();
+    }
+
+    private void initiLineViewData()
+    {
+        for(int i = 0;i < data_number;i++)
+            xValues.add(String.valueOf(i));
+        yValues.add(0f);
+
+        // xy轴集合自己添加数据
+        chartView.setXValues(xValues);
+        chartView.setYValues(yValues);
+    }
+
+    private void LineView_updata(int id,Float newdata)
+    {
+        String x_string = String.valueOf(id);
+
+        if(id >= data_number)
+        {
+            for(int a=0;a < data_number-1;a++)
+            {
+                xValues.set(a,xValues.get(a+1));
+                yValues.set(a,yValues.get(a+1));
+            }
+            xValues.set(data_number-1 ,x_string);
+            yValues.set(data_number-1 ,newdata);
+        }
+        else
+        {
+            xValues.set(id, x_string);
+            yValues.add(id, newdata);
+        }
+        // xy轴集合自己添加数据
+        chartView.setXValues(xValues);
+        chartView.setYValues(yValues);
+        chartView.invalidate();
     }
 
     @Override
@@ -404,7 +481,18 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
 
             case R.id.btn_mode_btn:
             {
-                Toast.makeText(DeviceControlActivity.this, "下版本支持", Toast.LENGTH_SHORT).show();
+                if(mGattServicesList.getVisibility() == View.VISIBLE)
+                {
+                    mGattServicesList.setVisibility(View.INVISIBLE);
+                    chartView.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    mGattServicesList.setVisibility(View.VISIBLE);
+                    chartView.setVisibility(View.INVISIBLE);
+                }
+                //Toast.makeText(DeviceControlActivity.this, "下版本支持", Toast.LENGTH_SHORT).show();
+
             }break;
 
             case R.id.list_mode_start_btn:
@@ -510,6 +598,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
         unbindService(mServiceConnection);
         mBluetoothLeService = null;
         Log.d(TAG, "onDestroy");
+        LineViewimer.cancel();
     }
 
     @Override
@@ -592,7 +681,8 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
 
     private void display_smokepowerData(String data) {
         if (data != null) {
-            SmokePowerDataField.setText(data);
+            SmokePowerDataField.setText(data+"W");
+            output_power = Float.parseFloat(data);
         }
     }
 
@@ -642,8 +732,11 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                 default:WorkModeDataField.setText("未知状态" );break;
             }
 
-            if(data !="2")
+            if(data !="2") //不在抽烟状态
+            {
+                output_power = 0; //如果不在抽烟状态，输出功率就为0
                 SmokePowerDataField.setText("0");
+            }
 
             WorkModeDataField.setText(display );
         }
