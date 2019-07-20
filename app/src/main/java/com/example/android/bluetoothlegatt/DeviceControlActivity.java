@@ -95,7 +95,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
 
     //图表数据
     LineView chartView;
-    private int chartdata_x=0;
+    private long chartdata_x=0;
     final int data_number=16;
     List<String> xValues = new ArrayList<>();   //x轴数据集合
     List<Float> yValues = new ArrayList<>();  //y轴数据集合
@@ -148,7 +148,7 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
             if(msg.what == 0x123)
             {
                 LineView_updata(++chartdata_x,output_power);
-                System.out.println("LINEVIEW DISPLAY: " + output_power);
+                //System.out.println("LINEVIEW DISPLAY: " + output_power);
             }
         }
     };
@@ -379,8 +379,6 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
 
         LineViewtask = new TimerTask(){
             public void run(){
-                //LineView_updata(++chartdata_x,output_power);
-                //System.out.println("LINEVIEW DISPLAY: " + output_power);
                 Message message = new Message();
                 message.what = 0x123;
                 handler.sendMessage(message);
@@ -403,9 +401,9 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
         chartView.setYValues(yValues);
     }
 
-    private void LineView_updata(int id,Float newdata)
+    private void LineView_updata(long id,Float newdata)
     {
-        String x_string = String.valueOf(id);
+        String x_string = String.valueOf(id%1000);//每过一段时间就重新开始
 
         if(id >= data_number)
         {
@@ -419,8 +417,8 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
         }
         else
         {
-            xValues.set(id, x_string);
-            yValues.add(id, newdata);
+            xValues.set((int)id, x_string);
+            yValues.add((int)id, newdata);
         }
         // xy轴集合自己添加数据
         chartView.setXValues(xValues);
