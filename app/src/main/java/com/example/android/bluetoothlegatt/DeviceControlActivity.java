@@ -176,6 +176,21 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                 updateConnectionState(R.string.disconnected);
                 invalidateOptionsMenu();
                 clearUI();
+                Toast.makeText(DeviceControlActivity.this, "将退出此界面", Toast.LENGTH_LONG).show();
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try
+                        {
+                            Thread.sleep(4000);
+                            finish();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+
             }
             else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action))
             {
@@ -232,16 +247,17 @@ public class DeviceControlActivity extends Activity implements View.OnClickListe
                             {
                                 final int charaProp = chara_temp.getProperties();
 
+                                Thread.sleep(300);
+
                                 if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0)
                                 {
                                     mBluetoothLeService.setCharacteristicNotification(chara_temp, true);
                                     //Log.d(TAG, "enable the  NOTIFY");
                                     System.out.println("enable the  NOTIFY");
                                 }
-
-                                Thread.sleep(300);
                             }
 
+                            Thread.sleep(300);
                             mBluetoothLeService.readCharacteristic(GetSetPower_sendrecv_characteristic);
 
                         }catch (Exception e){
